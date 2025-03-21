@@ -2,175 +2,100 @@
 #include <string>
 using namespace std;
 
-// Структура для представления элемента списка
-struct Item {
-    string name;
-    int quantity;
-    double price;
-    Item* next = nullptr; // Указатель на следующий элемент списка, инициализируем null
-};
-
-// Класс для работы со списком 
-class ItemList {
+class LinkedList {
 private:
-    Item* head = nullptr; // Указатель на первый элемент списка, инициализируем null
+    struct Node {
+        string name;
+        int amount;
+        double price;
+        Node* next;
+    };
 
-    // Вспомогательная функция для удаления элемента списка
-    void deleteItem(Item* item) {
-        delete item;
+    Node* head; // Указатель на голову списка
+
+    Node* CreateNode(const string& newName, int n, double p) {
+        return new Node{newName, n, p, nullptr}; // Создание нового узла
     }
 
 public:
-    // Деструктор для освобождения памяти, занятой списком
-    ~ItemList() {
-        while (head) { // Пока есть элементы в списке
-            Item* temp = head; // Сохраняем указатель на текущий элемент
-            head = head->next; // Перемещаем указатель на следующий элемент
-            deleteItem(temp); // Удаляем текущий элемент
-        }
+    LinkedList() : head(nullptr) {}
+
+    void AddFirst(const string& newName, int n, double p) {
+        Node* newNode = CreateNode(newName, n, p);
+        newNode->next = head;
+        head = newNode;
     }
 
-    // Метод для добавления элемента в начало списка
-    void addToFront(const string& name, int quantity, double price) {
-        head = new Item{name, quantity, price, head}; // Создаём новый элемент и устанавливаем его как голову списка
-    }
-
-    // Метод для добавления элемента в конец списка
-    void addToEnd(const string& name, int quantity, double price) {
-        Item* newItem = new Item{name, quantity, price}; // Создаём новый элемент
-        if (!head) { // Если список пуст
-            head = newItem; // Устанавливаем новый элемент как голову списка
+    void AddLast(const string& newName, int n, double p) {
+        Node* newNode = CreateNode(newName, n, p);
+        if (!head) {
+            head = newNode;
             return;
         }
-        Item* temp = head; // Указатель для обхода списка
-        while (temp->next) // Пока есть следующий элемент
-            temp = temp->next; // Перемещаемся к следующему элементу
-        temp->next = newItem; // Добавляем новый элемент в конец списка
+        Node* tmp = head;
+        while (tmp->next) tmp = tmp->next;
+        tmp->next = newNode;
     }
 
-    // Метод для добавления элемента после заданного элемента
-    void addAfter(const string& afterName, const string& name, int quantity, double price) {
-        Item* temp = head; // Указатель для обхода списка
-        while (temp && temp->name != afterName) // Ищем элемент с заданным именем
-            temp = temp->next; // Перемещаемся к следующему элементу
-        if (temp) // Если нашли элемент
-            temp->next = new Item{name, quantity, price, temp->next}; // Вставляем новый элемент после найденного
+    int AddAfter(const string& newName, int n, double p, const string& nameAfter) {
+        Node* tmp = head;
+        while (tmp && tmp->name != nameAfter) tmp = tmp->next;
+        if (!tmp) return 1;
+        Node* newNode = CreateNode(newName, n, p);
+        newNode->next = tmp->next;
+        tmp->next = newNode;
+        return 0;
     }
 
-    // Метод для добавления элемента перед заданным элементом
-    void addBefore(const string& beforeName, const string& name, int quantity, double price) {
-        if (!head) return; // Если список пуст, выходим из метода
-        if (head->name == beforeName) { // Если нужно добавить перед первым элементом
-            addToFront(name, quantity, price); // Добавляем в начало списка
-            return; // Выходим из метода
+    int DelNode(const string& delName) {
+        if (!head) return 1;
+        if (head->name == delName) {
+            Node* tmp = head;
+            head = head->next;
+            delete tmp;
+            return 0;
         }
-        Item* temp = head; // Указатель для обхода списка
-        while (temp->next && temp->next->name != beforeName) // Ищем элемент перед заданным
-            temp = temp->next; // Перемещаемся к следующему элементу
-        if (temp->next) // Если нашли элемент
-            temp->next = new Item{name, quantity, price, temp->next}; // Вставляем новый элемент перед найденным
+        Node* prev = head;
+        Node* tmp = head->next;
+        while (tmp && tmp->name != delName) {
+            prev = tmp;
+            tmp = tmp->next;
+        }
+        if (!tmp) return 1;
+        prev->next = tmp->next;
+        delete tmp;
+        return 0;
     }
 
-    // Метод для удаления элемента по имени
-    void remove(const string& name) {
-        if (!head) return; // Если список пуст, выходим из метода
-        if (head->name == name) { // Если нужно удалить первый элемент
-            Item* temp = head; // Сохраняем указатель на первый элемент
-            head = head->next; // Перемещаем голову на следующий элемент
-            deleteItem(temp); // Удаляем первый элемент
+    void PrintList() const {
+        if (!head) {
+            cout << "The list is empty" << endl;
             return;
         }
-        Item* temp = head; // Указатель для обхода списка
-        while (temp->next && temp->next->name != name) // Ищем элемент с заданным именем
-            temp = temp->next; // Перемещаемся к следующему элементу
-        if (temp->next) { // Если нашли элемент
-            Item* toDelete = temp->next; // Сохраняем указатель на элемент, который нужно удалить
-            temp->next = toDelete->next; // Переподключаем указатели
-            deleteItem(toDelete); // Удаляем элемент
+        for (Node* tmp = head; tmp; tmp = tmp->next) {
+            cout << "Chocolate: " << tmp->name << ", Amount: " << tmp->amount << ", Price: " << tmp->price << endl;
         }
     }
 
-    // Метод для отображения содержимого списка
-    void display() const {
-        for (Item* temp = head; temp; temp = temp->next) { // Обходим список
-            cout << "Name: " << temp->name // Выводим название
-                 << ", Quantity: " << temp->quantity // Выводим количество
-                 << ", Price: " << temp->price << endl; // Выводим цену
+    ~LinkedList() {
+        while (head) {
+            Node* tmp = head;
+            head = head->next;
+            delete tmp;
         }
     }
 };
 
-// Функция для ввода данных
-void inputItemData(string& name, int& quantity, double& price) {
-    cout << "Введите название товара: "; // Запрос названия
-    getline(cin, name); // Чтение названия
-    cout << "Введите количество: "; // Запрос количества
-    cin >> quantity; // Чтение количества
-    cout << "Введите цену: "; // Запрос цены
-    cin >> price; // Чтение цены
-    cin.ignore(); // Игнорируем символ новой строки после ввода числа
-}
-
-// Главная функция программы
 int main() {
-    ItemList list; // Создание экземпляра списка
-    int choice; // Переменная для хранения выбора пользователя
+    LinkedList chocolateList;
 
-    do {
-        // Меню действий
-        cout << "\nМеню:\n"
-             << "1. Добавить элемент в начало списка\n"
-             << "2. Добавить элемент в конец списка\n"
-             << "3. Добавить элемент после заданного\n"
-             << "4. Добавить элемент перед заданным\n"
-             << "5. Удалить элемент\n"
-             << "6. Вывести содержимое списка\n"
-             << "0. Выход\n"
-             << "Выберите действие: ";
-        cin >> choice; // Чтение выбора пользователя
-        cin.ignore(); // Игнорируем символ новой строки
+    chocolateList.AddFirst("Milka", 10, 1200);
+    chocolateList.AddLast("Alpen Gold", 20, 6100);
+    chocolateList.AddAfter("Алёнка", 15, 2301);
+    chocolateList.AddLast("Merci", 5, 680);
 
-        string name, afterName, beforeName; // Переменные для хранения данных
-        int quantity; // Переменная для хранения количества
-        double price; // Переменная для хранения цены
-
-        switch (choice) { // Обработка выбора пользователя
-            case 1:
-                inputItemData(name, quantity, price); // Ввод данных
-                list.addToFront(name, quantity, price); // Добавление в начало списка
-                break;
-            case 2:
-                inputItemData(name, quantity, price); // Ввод данных
-                list.addToEnd(name, quantity, price); // Добавление в конец списка
-                break;
-            case 3:
-                cout << "Введите имя элемента после которого добавить: ";
-                getline(cin, afterName); // Чтение имени элемента
-                inputItemData(name, quantity, price); // Ввод данных
-                list.addAfter(afterName, name, quantity, price); // Добавление после заданного
-                break;
-            case 4:
-                cout << "Введите имя элемента перед которым добавить: ";
-                getline(cin, beforeName); // Чтение имени элемента
-                inputItemData(name, quantity, price); // Ввод данных
-                list.addBefore(beforeName, name, quantity, price); // Добавление перед заданным
-                break;
-            case 5:
-                cout << "Введите имя элемента для удаления: ";
-                getline(cin, name); // Чтение имени элемента
-                list.remove(name); // Удаление элемента из списка
-                break;
-            case 6:
-                cout << "Содержимое списка:\n";
-                list.display(); // Вывод содержимого списка
-                break;
-            case 0:
-                cout << "Выход из программы.\n";
-                break;
-            default:
-                cout << "Неверный выбор. Попробуйте снова.\n";
-        }
-    } while (choice != 0); // Продолжаем, пока пользователь не выберет выход
+    cout << "Chocolate List:" << endl;
+    chocolateList.PrintList();
 
     return 0;
 }
