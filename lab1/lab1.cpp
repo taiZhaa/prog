@@ -11,10 +11,10 @@ private:
         Node* next;
     };
 
-    Node* head; // Указатель на голову списка
+    Node* head;
 
     Node* CreateNode(const string& newName, int n, double p) {
-        return new Node{newName, n, p, nullptr}; // Создание нового узла
+        return new Node{newName, n, p, nullptr};
     }
 
 public:
