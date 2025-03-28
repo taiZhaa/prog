@@ -47,6 +47,25 @@ public:
         return 0;
     }
 
+    int AddBefore(string newName, int n, double p, string nameBefore) {
+        if (head == nullptr) return 1;
+        if (head->name == nameBefore) {
+            AddFirst(newName, n, p);
+            return 0;
+        }
+        Node* prev = head;
+        Node* tmp = head->next;
+        while (tmp != nullptr && tmp->name != nameBefore) {
+            prev = tmp;
+            tmp = tmp->next;
+        }
+        if (tmp == nullptr) return 1;
+        Node* newNode = CreateNode(newName, n, p);
+        newNode->next = tmp;
+        prev->next = newNode;
+        return 0;
+    }
+
     int DelNode(const string& delName) {
         if (!head) return 1;
         if (head->name == delName) {
