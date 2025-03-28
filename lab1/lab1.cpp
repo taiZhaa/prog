@@ -110,8 +110,8 @@ int main() {
 
     chocolateList.AddFirst("Milka", 10, 1200);
     chocolateList.AddLast("Alpen Gold", 20, 6100);
-    chocolateList.AddAfter("Alenka", 15, 2301);
-    chocolateList.AddLast("Merci", 5, 680);
+    chocolateList.AddAfter("Alenka", 15, 2301, "Milka");
+    chocolateList.AddBefore("Merci", 4, 5, "Alpen Gold");
 
     cout << "Chocolate List:" << endl;
     chocolateList.PrintList();
