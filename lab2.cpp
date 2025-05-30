@@ -8,19 +8,16 @@ public:
     static int count;
     int num;
 
-    // Конструктор
     vect(int dim = 0) : dim(dim), num(++count) {
         b = new double[dim];
         cout << "Создан объект vect #" << num << endl;
     }
 
-    // Деструктор
     ~vect() {
         delete[] b;
         cout << "Удалён объект vect #" << num << endl;
     }
 
-    // Оператор присваивания
     vect& operator=(const vect& v) {
         if (this != &v) {
             delete[] b;
@@ -34,7 +31,6 @@ public:
         return *this;
     }
 
-    // Прочие операторы
     vect operator+(const vect& v) const {
         vect res(dim);
         for (int i = 0; i < dim; ++i) {
@@ -81,19 +77,16 @@ public:
     static int count;
     int num;
 
-    // Конструктор
     matr(int dim = 0) : dim(dim), num(++count) {
         a = new double[dim * dim];
         cout << "Создан объект matr #" << num << endl;
     }
 
-    // Деструктор
     ~matr() {
         delete[] a;
         cout << "Удалён объект matr #" << num << endl;
     }
 
-    // Оператор присваивания
     matr& operator=(const matr& m) {
         if (this != &m) {
             delete[] a;
@@ -107,7 +100,6 @@ public:
         return *this;
     }
 
-    // Прочие операторы (пример для сложения)
     matr operator+(const matr& m) const {
         matr res(dim);
         for (int i = 0; i < dim * dim; ++i) {
