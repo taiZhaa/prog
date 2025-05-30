@@ -11,15 +11,12 @@ public:
     int age;
     string major;
 
-    // Конструктор по умолчанию
     Student() : name(""), age(0), major("") {}
 
-    // Метод для преобразования объекта в строку
     string toString() const {
         return name + " " + to_string(age) + " " + major;
     }
 
-    // Метод для создания объекта из строки
     void fromString(const string& str) {
         istringstream iss(str);
         iss >> name >> age >> major;
@@ -80,7 +77,6 @@ public:
 int main() {
     Database db("students.txt");
 
-    // Пример добавления студентов
     Student student1;
     student1.name = "Alice";
     student1.age = 20;
@@ -93,27 +89,21 @@ int main() {
     student2.major = "Mathematics";
     db.addStudent(student2);
 
-    // Сохранение студентов в файл
     db.saveToFile();
 
-    // Загрузка студентов из файла
     db.loadFromFile();
 
-    // Отображение студентов
     cout << "Список студентов:" << endl;
     db.displayStudents();
 
-    // Обновление студента
     Student updatedStudent;
     updatedStudent.name = "Alice";
     updatedStudent.age = 21;
     updatedStudent.major = "DataScience";
     db.updateStudent(0, updatedStudent);
 
-    // Удаление студента
     db.deleteStudent(1);
 
-    // Сохранение изменений в файл
     db.saveToFile();
 
     return 0;
