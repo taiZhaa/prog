@@ -1,110 +1,115 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <sstream>
-
+#include <string>
 using namespace std;
 
-class Student {
-public:
+struct Student {
     string name;
-    int age;
-    string major;
-
-    Student() : name(""), age(0), major("") {}
-
-    string toString() const {
-        return name + " " + to_string(age) + " " + major;
-    }
-
-    void fromString(const string& str) {
-        istringstream iss(str);
-        iss >> name >> age >> major;
-    }
+    string age;
+    string grade;
 };
 
-class Database {
-private:
-    vector<Student> students;
-    string filename;
+vector<Student> students;
+const string filename = "database.txt";
 
-public:
-    Database(const string& fname) : filename(fname) {}
+void addStudent() {
+    Student s;
+    cout << "Name: ";
+    cin >> s.name;
+    cout << "Age: ";
+    cin >> s.age;
+    cout << "Class: ";
+    cin >> s.grade;
+    students.push_back(s);
+}
 
-    void addStudent(const Student& student) {
-        students.push_back(student);
-    }
-
-    void saveToFile() {
-        ofstream file(filename);
-        for (const auto& student : students) {
-            file << student.toString() << endl;
+void saveToFile() {
+    ofstream file(filename);
+    if (file.is_open()) {
+        for (const auto& s : students) {
+            file << s.name << " " << s.age << " " << s.grade << "\n";
         }
-        file.close();
+        cout << "Saved.\n";
+    } else {
+        cout << "Error.\n";
     }
+}
 
-    void loadFromFile() {
-        ifstream file(filename);
+void loadFromFile() {
+    ifstream file(filename);
+    students.clear();
+    if (file.is_open()) {
         string line;
-        students.clear();
         while (getline(file, line)) {
-            Student student;
-            student.fromString(line);
-            students.push_back(student);
+            size_t pos1 = line.find(' ');
+            size_t pos2 = line.find(' ', pos1 + 1);
+            if (pos1 != string::npos && pos2 != string::npos) {
+                Student s;
+                s.name = line.substr(0, pos1);
+                s.age = line.substr(pos1 + 1, pos2 - pos1 - 1);
+                s.grade = line.substr(pos2 + 1);
+                students.push_back(s);
+            }
         }
-        file.close();
+        cout << "Saved.\n";
+    } else {
+        cout << "File not found.\n";
     }
+}
 
-    void updateStudent(int index, const Student& student) {
-        if (index >= 0 && index < students.size()) {
-            students[index] = student;
-        }
+void updateStudent() {
+    cout << "Number of student: ";
+    size_t i;
+    cin >> i;
+    
+    if (i < students.size()) {
+        cout << "New name: ";
+        getline(cin, students[i].name);
+        cout << "New age: ";
+        getline(cin, students[i].age);
+        cout << "New class: ";
+        getline(cin, students[i].grade);
+        cout << "Saved.\n";
+    } else {
+        cout << "There is no such number.\n";
     }
+}
 
-    void deleteStudent(int index) {
-        if (index >= 0 && index < students.size()) {
-            students.erase(students.begin() + index);
-        }
+void deleteStudent() {
+    cout << "Numper of student: ";
+    size_t i;
+    cin >> i;
+    
+    if (i < students.size()) {
+        students.erase(students.begin() + i);
+        cout << "Deleted.\n";
+    } else {
+        cout << "There is no such number.\n";
     }
-
-    void displayStudents() const {
-        for (const auto& student : students) {
-            cout << student.toString() << endl;
-        }
-    }
-};
+}
 
 int main() {
-    Database db("students.txt");
-
-    Student student1;
-    student1.name = "Alice";
-    student1.age = 20;
-    student1.major = "ComputerScience";
-    db.addStudent(student1);
-
-    Student student2;
-    student2.name = "Bob";
-    student2.age = 22;
-    student2.major = "Mathematics";
-    db.addStudent(student2);
-
-    db.saveToFile();
-
-    db.loadFromFile();
-
-    cout << "Список студентов:" << endl;
-    db.displayStudents();
-
-    Student updatedStudent;
-    updatedStudent.name = "Alice";
-    updatedStudent.age = 21;
-    updatedStudent.major = "DataScience";
-    db.updateStudent(0, updatedStudent);
-
-    db.deleteStudent(1);
-
-    db.saveToFile();
-
-    return 0;
+    loadFromFile();
+    
+    while (true) {
+        cout << "\n1. Add student\n"
+             << "2. Change\n"
+             << "3. Remove\n"
+             << "4. Download\n"
+             << "5. Save to a file\n"
+             << "Choose: ";
+             
+        int choice;
+        cin >> choice;
+        
+        switch (choice) {
+            case 1: addStudent(); break;
+            case 2: updateStudent(); break;
+            case 3: deleteStudent(); break;
+            case 4: loadFromFile(); break;
+            case 5: saveToFile(); return 0;
+            default: cout << "There is no such choice in the list.\n";
+        }
+    }
 }
