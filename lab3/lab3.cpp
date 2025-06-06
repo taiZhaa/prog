@@ -2,7 +2,6 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include <cmath>
 using namespace std;
 
 class BasePoint {
@@ -47,29 +46,29 @@ public:
     }
 };
 
-class Shape : public BasePoint {
+class Shape {
 protected:
     vector<Vertex> vertices;
 
 public:
     Shape(const vector<Vertex>& verts) : vertices(verts) {}
 
-    void draw() const override {
+    void draw() const {
         cout << "Рисую фигуру с вершинами:\n";
         for (const auto& v : vertices)
             v.draw();
     }
 
-    void erase() override {
+    void erase() {
         cout << "Стираю фигуру.\n";
     }
 
-    void move(double dx, double dy) override {
+    void move(double dx, double dy) {
         for (auto& v : vertices)
             v.move(dx, dy);
     }
 
-    void rotate(double angle) override {
+    void rotate(double angle) {
         for (auto& v : vertices)
             v.rotate(angle);
     }
@@ -79,7 +78,7 @@ class Line : public Shape {
 public:
     Line(Vertex v1, Vertex v2) : Shape({ v1, v2 }) {}
 
-    void draw() const override {
+    void draw() const {
         cout << "Рисую линию:\n";
         Shape::draw();
     }
@@ -91,21 +90,37 @@ public:
         : Shape({ v1, v2, v3, v4 }) {
     }
 
-    void draw() const override {
+    void draw() const {
         cout << "Рисую прямоугольник:\n";
         Shape::draw();
     }
 };
 
-class Square : virtual public Rectangle {
+class Square : public BasePoint {
+private:
+    Shape shape;
+
 public:
     Square(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
-        : Rectangle(v1, v2, v3, v4) {
+        : shape({ v1, v2, v3, v4 }) {
     }
 
     void draw() const override {
         cout << "Рисую квадрат:\n";
-        Shape::draw();
+        shape.draw();
+    }
+
+    void erase() override {
+        cout << "Стираю квадрат:\n";
+        shape.erase();
+    }
+
+    void move(double dx, double dy) override {
+        shape.move(dx, dy);
+    }
+
+    void rotate(double angle) override {
+        shape.rotate(angle);
     }
 };
 
@@ -115,19 +130,19 @@ public:
         : Shape({ v1, v2, v3, v4 }) {
     }
 
-    void draw() const override {
+    void draw() const {
         cout << "Рисую ромб:\n";
         Shape::draw();
     }
 };
 
-class Parallelogram : virtual public Rectangle, public Square {
+class Parallelogram : public Rectangle {
 public:
     Parallelogram(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
-        : Rectangle(v1, v2, v3, v4), Square(v1, v2, v3, v4) {
+        : Rectangle(v1, v2, v3, v4) {
     }
 
-    void draw() const override {
+    void draw() const {
         cout << "Рисую параллелограмм:\n";
         Shape::draw();
     }
